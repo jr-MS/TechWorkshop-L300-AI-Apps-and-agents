@@ -1,5 +1,5 @@
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-from azure.ai.evaluation.red_team import RedTeam, RiskCategory
+from azure.ai.evaluation.red_team import RedTeam, AttackStrategy
 import httpx
 import os
 import asyncio
@@ -13,13 +13,7 @@ azure_ai_project = os.getenv("FOUNDRY_ENDPOINT")
 red_team_agent = RedTeam(
     azure_ai_project=azure_ai_project,
     credential=DefaultAzureCredential(),
-    risk_categories=[
-        RiskCategory.Violence,
-        RiskCategory.HateUnfairness,
-        RiskCategory.Sexual,
-        RiskCategory.SelfHarm,
-    ],
-    num_objectives=1,
+    custom_attack_seed_prompts="data/custom_attack_prompts.json",
 )
 
 credential = DefaultAzureCredential()
@@ -57,7 +51,16 @@ def cora_target(query: str) -> str:
 
 
 async def main():
-    await red_team_agent.scan(target=cora_target)
+    await red_team_agent.scan(
+        target=cora_target,
+        scan_name="Red Team Scan - Custom Strategies",
+        attack_strategies=[
+            AttackStrategy.Flip,
+            AttackStrategy.ROT13,
+            AttackStrategy.Base64,
+            AttackStrategy.Tense,
+        ],
+    )
 
 
 asyncio.run(main())
