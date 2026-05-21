@@ -11,6 +11,8 @@ on:
 
 env:
   AZURE_CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+  AZURE_CONTAINER_APP_NAME: app-mgskhjtznvgpi
+  AZURE_RESOURCE_GROUP: rg-louise-workshop
   IMAGE_NAME: chat-app
 
 jobs:
@@ -39,8 +41,8 @@ jobs:
       - name: Deploy new container image with environment variables
         run: |
           az containerapp update \
-            --name ${{ secrets.AZURE_CONTAINER_APP_NAME }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.AZURE_CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --image ${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             --set-env-vars \
               FOUNDRY_ENDPOINT="${{ secrets.FOUNDRY_ENDPOINT }}" \
